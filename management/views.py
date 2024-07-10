@@ -36,20 +36,30 @@ def todo_list(request):
         if page is not None:
             serializer = TodoListSerializer(page, many=True)
             return paginator.get_paginated_response(serializer.data)
+
+
         serializer = TodoListSerializer(todos, many=True)
         return Response(serializer.data)
+
+
     elif request.method == 'POST':
         data = request.data
-        serializer = TodoListSerializer(data=data)
+        serializer = TodoCreateSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(create_by = request.user)
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
-@api_view(['GET'])
+@api_view(['GET','DELETE'])
 def todo_detail(request, id):
     todo = get_object_or_404(Todo, id=id)
-    serializer = TodoDetailSerializer(todo)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        serializer = TodoDetailSerializer(todo)
+        return Response(serializer.data)
+    elif request.method == 'DELETE':
+        todo.delete()
+        massage = {"success":"Todo has been delete successfully"}
+        return Response(massage,status=status.HTTP_204_NO_CONTENT)

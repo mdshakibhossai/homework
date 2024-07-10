@@ -6,8 +6,12 @@ class TodoListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = ['titel']
+        depth = 1
 
-
+class TodoCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Todo
+        fields = ['titel']
 
 class TodoDetailSerializer(serializers.ModelSerializer):
     class Meta:
